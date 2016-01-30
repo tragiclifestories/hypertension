@@ -44,15 +44,20 @@
   ([_ _] nil))
 
 (defprotocol ApiResource
-  (resource-url [self]))
+  (resource-url [self] [self opts]))
 
 (defprotocol ApiRelatedResource
   (related-resource-url [self related-resource]))
 
 (defprotocol ApiRelationship
-  (relationship-url [self related-name]))
+  (relationship-url [self related-name] [self related-name opts]))
 
-(extend clojure.lang.PersistentArrayMap
-  ApiResource {:resource-url _resource-url}
-  ApiRelatedResource {:related-resource-url _related-resource-url}
-  ApiRelationship {:relationship-url _relationship-url})
+(extend-type java.lang.Object
+  ApiResource
+  (resource-url [self] (_resource-url self))
+  (resource-url [self opts] (_resource-url self opts))
+  ApiRelationship
+  (relationship-url [self related-name]
+    (_relationship-url self related-name))
+  (relationship-url [self related-name opts]
+    (_relationship-url self related-name opts)))
